@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Advertise</string>
+
+    <string name="PermissionsNeeded">Not all requested permissions was granted. You can grant permissions in phone settings for application Display brightness. Application now exit.</string>
+    <string name="server">Server address: </string>
+
+    <string name="start_service">Show</string>
+    <string name="stop_service">Hide</string>
+    <string name="bottom_margin">Bottom margin:</string>
+</resources>
