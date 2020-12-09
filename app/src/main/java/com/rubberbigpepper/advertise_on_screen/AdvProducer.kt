@@ -3,6 +3,7 @@ package com.rubberbigpepper.advertise_on_screen
 import android.content.Context
 import android.graphics.Color
 import android.os.Environment
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
@@ -20,6 +21,7 @@ class AdvProducer (context: Context) {//класс будет выдавать �
     private var loop=false
     private var mContext = context
     private var foundNewSource=false
+    private final val TAG = "AdvertiseService"
 
     companion object {
         @JvmStatic
@@ -92,27 +94,28 @@ class AdvProducer (context: Context) {//класс будет выдавать �
         try {
             var advData = AdvData()
             var data: MutableList<AdvData> = mutableListOf()
-            file.forEachLine(Charset.forName("windows-1251")) {
+            //file.forEachLine(Charset.forName("windows-1251")) {
+            file.forEachLine() {
                 var row=it.trim()
                 if (row.length==0) {//новый фрагмент
-                    data.add(advData)
-                    val newData = AdvData()
-                    newData.readFromData(advData)
-                    advData=newData
+                    if (advData.text!=null)
+                        data.add(advData)
+                    advData=AdvData()
                 }
                 else {
-                    val fields = it.split(Pattern.compile("="), 2)
+                    val fields = row.split(Pattern.compile("="), 2)
                     if (fields.size == 2) {
                         val key = fields[0].trim()
                         var value = fields[1].trim()
-                        if (key.equals(AdvProducer.newSource, ignoreCase = true)) {//нашли новый адрес сервера
+                        /*if (key.equals(AdvProducer.newSource, ignoreCase = true)) {//нашли новый адрес сервера
+                            Log.e(TAG, "New source found = "+value)
                             val cPrefs = mContext.getSharedPreferences("Common",
                                 AppCompatActivity.MODE_PRIVATE
                             ).edit()
                             cPrefs?.putString("server",value)
                             cPrefs.commit()
                             foundNewSource=true
-                        }
+                        }*/
                         if (key.equals(AdvProducer.textKey, ignoreCase = true)) {
                             advData.text = value
                         }
@@ -137,7 +140,8 @@ class AdvProducer (context: Context) {//класс будет выдавать �
                     }
                 }
             }
-            data.add(advData)
+            if (advData.text!=null)
+                data.add(advData)
             return data
         }
         catch (ex: Exception){
@@ -146,25 +150,51 @@ class AdvProducer (context: Context) {//класс будет выдавать �
         return null
     }
 
-    fun readNextDataFromServer(context: Context, address: String, callback: (Boolean)->Unit){//чтение данных с сервера
-        GlobalScope.launch(Dispatchers.Default, CoroutineStart.DEFAULT, null, {
+    public fun readNextDataFromServer(context: Context, address: String, callback: ()->Unit, errorCallback: ()->Unit){//чтение данных с сервера
+        GlobalScope.launch(Dispatchers.Default, CoroutineStart.DEFAULT) {
             entries.clear()
             clearFolder(context)
             try {
-                val url=URL(address)
-                url.let {
-                    val text = it.readText(Charset.forName("windows-1251"))
+                val url = URL(address)
+                val text = url.readText(Charset.forName("windows-1251"))
+                if (text.isNotEmpty()) {
                     var fileName = FolderPath(context)
                     fileName += descriptionFileName
                     File(fileName).writeText(text, Charset.forName("windows-1251"))
                     readInternalFolder(context)
-                }
+                    callback()
+                } else
+                    errorCallback()
+            } catch (ex: java.lang.Exception) {
+                ex.printStackTrace()
+                errorCallback()
             }
-            catch (ex: java.lang.Exception){
+        }
+    }
+
+    public fun readNextServerAddress(context: Context, address: String, callback: (String?)->Unit) {//чтение данных с сервера
+        GlobalScope.launch(Dispatchers.Default, CoroutineStart.DEFAULT) {
+            var newAddress: String? = null
+            try {
+                val url = URL(address)
+                val text = url.readText(Charset.forName("windows-1251"))
+                val lines = text.lines()
+                for (line in lines){
+                    val fields = line.split(Pattern.compile("="), 2)
+                    if (fields.size == 2) {
+                        val key = fields[0].trim()
+                        var value = fields[1].trim()
+                        if (key.equals(AdvProducer.newSource, ignoreCase = true)) {//нашли новый адрес сервера
+                            newAddress = value
+                            callback(newAddress)
+                            break
+                        }
+                    }
+                }
+            } catch (ex: java.lang.Exception) {
                 ex.printStackTrace()
             }
-            callback(foundNewSource)
-        })
+        }
     }
 
     private fun makeColorFromString(colorStr: String): Int {

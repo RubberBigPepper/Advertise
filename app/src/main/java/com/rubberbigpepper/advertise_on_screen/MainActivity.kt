@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener{
                 savePrefs()
             } catch (ex: java.lang.Exception) {
             }
-            if (showView) startService(true)
+            if (showView) startService(true, false)
         }
     }
 
@@ -56,7 +56,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener{
         serverEditText?.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 savePrefs()
-                startService(false)
+                startService(false, false)
             }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -68,7 +68,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener{
         findViewById<Button>(R.id.ButtonStart)?.setOnClickListener(this)
         findViewById<Button>(R.id.ButtonStop)?.setOnClickListener(this)
         savePrefs()
-        startService(true)
+        startService(true, true)
        /* if (!intent.getBooleanExtra("show settings",false)){//нет необходимого параметра в интенте - просто выходим
             showView=true
             finish()
@@ -230,10 +230,17 @@ class MainActivity : AppCompatActivity(), View.OnClickListener{
         cPrefs.commit()
     }
 
-    private fun startService(bStart: Boolean) {
+    private fun startService(bStart: Boolean, bReboot: Boolean) {
         try {
             val cIntent = Intent(this, AdvertiseService::class.java)
-            if (bStart) cIntent.action = AdvertiseService.ACTION_START else cIntent.action = AdvertiseService.ACTION_UPDATE
+            if (bStart) {
+                if (bReboot)
+                    cIntent.action = AdvertiseService.ACTION_START_AFTERBOOT
+                else
+                    cIntent.action = AdvertiseService.ACTION_START
+            }
+            else
+                cIntent.action = AdvertiseService.ACTION_UPDATE
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 startForegroundService(cIntent)
             } else startService(cIntent)
@@ -255,7 +262,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener{
             R.id.ButtonStart -> {
                 showView = true
                 savePrefs()
-                startService(true)
+                startService(true, false)
             }
             R.id.ButtonStop -> {
                 showView = false

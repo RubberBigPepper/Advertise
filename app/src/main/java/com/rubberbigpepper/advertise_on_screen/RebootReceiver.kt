@@ -10,7 +10,7 @@ class RebootReceiver: BroadcastReceiver() {
         if (intent?.action==Intent.ACTION_BOOT_COMPLETED){
             try {
                 val cIntent = Intent(context, AdvertiseService::class.java)
-                cIntent.action = AdvertiseService.ACTION_START
+                cIntent.action = AdvertiseService.ACTION_START_AFTERBOOT
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     context?.startForegroundService(cIntent)
                 } else context?.startService(cIntent)

@@ -18,6 +18,7 @@ import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 import androidx.core.view.marginBottom
 import com.bumptech.glide.Glide
@@ -32,6 +33,7 @@ class AdvertiseService: Service() {
 
     companion object {
         @JvmStatic val ACTION_START = "albakm.StartAdvertiseService"
+        @JvmStatic val ACTION_START_AFTERBOOT = "albakm.StartAdvertiseServiceAfterBoot"
         @JvmStatic val ACTION_STOP = "albakm.StopAdvertiseService"
         @JvmStatic val ACTION_UPDATE = "albakm.UpdateAdvertiseService"
     }
@@ -115,13 +117,17 @@ class AdvertiseService: Service() {
             }
             stopSelf()
         } else { //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
-            if (strAction != null && strAction.equals(ACTION_START, ignoreCase = true)) {
+            if (strAction != null && (strAction==ACTION_START||strAction==ACTION_START_AFTERBOOT)) {
                 HideIndicator()
                 m_cWM = null
                 advProducer = AdvProducer(this)
               //  advProducer!!.readInternalFolder(this)
                 showIndicator()
-                checkHour()
+                if (strAction==ACTION_START_AFTERBOOT){//после перезагрузки надо проверить новый адрес сервера
+                    readNextServerAddress()
+                }
+                else
+                    checkHour()
                 //startForegroundCompat(R.string.app_name, new Notification());
                 val NOTIFICATION_ID = (System.currentTimeMillis() % 10000).toInt()
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
@@ -294,14 +300,26 @@ class AdvertiseService: Service() {
     }
 
     fun readNextDataFromServer(address: String){//чтение данных с сервера
-        advProducer?.readNextDataFromServer(this, address){
-            if (it){//наден новый адрес сервера
+        advProducer?.readNextDataFromServer(this, address, {//колбэк для результата
+            showNextAdvDataAsync() }, {//колбэк для ошибки - смена сервера
+            readNextServerAddress()
+        })
+    }
+
+    private fun readNextServerAddress(){
+        advProducer?.readNextServerAddress(this, "https://www.transportcompany.top/reklama/address.txt") {
+            if (it == null) {//адрес сервера не прочитан, работаем по старинке
+                checkHour()
+            } else {//читаем новый адрес и новые данные с него
+                Log.e(TAG, "New source found in master = " + it!!)
+                val cPrefs = getSharedPreferences("Common",
+                        AppCompatActivity.MODE_PRIVATE).edit()
+                cPrefs?.putString("server", it!!)
+                cPrefs.commit()
                 makeDescriptionAddr()?.let {
                     readNextDataFromServer(it)
                 }
             }
-            else
-                showNextAdvDataAsync()//колбэк для результата
         }
     }
 
@@ -358,5 +376,4 @@ class AdvertiseService: Service() {
         imageView.layoutParams.width=newWidth
         imageView.requestLayout()
     }
-
 }
