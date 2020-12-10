@@ -47,6 +47,7 @@ class AdvertiseService: Service() {
     private val handler = Handler(Looper.getMainLooper())
     private val hourReceiver = TimeBroadcatReceiver()
     private var prevHour = -1
+    private var prevHourAddress = -1
     private var blankStr=" "
     private var showCount=1
 
@@ -307,17 +308,22 @@ class AdvertiseService: Service() {
     }
 
     private fun readNextServerAddress(){
-        advProducer?.readNextServerAddress(this, "https://www.transportcompany.top/reklama/address.txt") {
-            if (it == null) {//адрес сервера не прочитан, работаем по старинке
-                checkHour()
-            } else {//читаем новый адрес и новые данные с него
-                Log.e(TAG, "New source found in master = " + it!!)
-                val cPrefs = getSharedPreferences("Common",
-                        AppCompatActivity.MODE_PRIVATE).edit()
-                cPrefs?.putString("server", it!!)
-                cPrefs.commit()
-                makeDescriptionAddr()?.let {
-                    readNextDataFromServer(it)
+        val currentDateTime = Calendar.getInstance()
+        val curHour=currentDateTime.get(Calendar.HOUR_OF_DAY)
+        if (curHour!=prevHourAddress) {//час изменился, читаем новые данные
+            prevHourAddress = curHour
+            advProducer?.readNextServerAddress(this, "https://www.transportcompany.top/reklama/address.txt") {
+                if (it == null) {//адрес сервера не прочитан, работаем по старинке
+                    checkHour()
+                } else {//читаем новый адрес и новые данные с него
+                    Log.e(TAG, "New source found in master = " + it!!)
+                    val cPrefs = getSharedPreferences("Common",
+                            AppCompatActivity.MODE_PRIVATE).edit()
+                    cPrefs?.putString("server", it!!)
+                    cPrefs.commit()
+                    makeDescriptionAddr()?.let {
+                        readNextDataFromServer(it)
+                    }
                 }
             }
         }
@@ -325,7 +331,7 @@ class AdvertiseService: Service() {
 
     private fun makeDescriptionAddr():String?{
         val currentDateTime = Calendar.getInstance()
-        val format = "HH"
+        val format = "MM/dd/HH"
         val sdf = SimpleDateFormat(format)
         val currentDate = sdf.format(currentDateTime.time)
         val cPrefs = getSharedPreferences("Common", MODE_PRIVATE)
@@ -335,6 +341,7 @@ class AdvertiseService: Service() {
                 newAddress+="/"
             newAddress+=currentDate+"/description.txt"
         }
+        Log.e(TAG, "new list = "+newAddress)
         return newAddress
     }
 
