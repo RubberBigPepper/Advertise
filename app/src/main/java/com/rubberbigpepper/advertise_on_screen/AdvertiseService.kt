@@ -5,26 +5,20 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.graphics.Color
 import android.graphics.PixelFormat
 import android.os.Build
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
-import android.util.DisplayMetrics
 import android.util.Log
+import android.util.TypedValue
 import android.view.*
 import android.widget.ImageView
-import android.widget.RelativeLayout
-import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
-import androidx.core.view.marginBottom
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import java.lang.Integer.min
-import java.lang.reflect.Method
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -135,8 +129,8 @@ class AdvertiseService: Service() {
                     startForeground(NOTIFICATION_ID,
                             NotificationCompat.Builder(this, m_channelId)
                                     .setSmallIcon(R.drawable.ic_launcher_foreground)
-                                   // .setContentTitle("")
-                                   // .setContentText("")
+                                    // .setContentTitle("")
+                                    // .setContentText("")
                                     .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                                     .build()
                     )
@@ -262,7 +256,7 @@ class AdvertiseService: Service() {
                                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                                 .into(imageView)
                                 .getSize({ width: Int, height: Int ->
-                                    adjustSizeImageView(imageView,width,height, it)
+                                    adjustSizeImageView(imageView, width, height, it)
                                 })
                     }
                     else {
@@ -282,12 +276,14 @@ class AdvertiseService: Service() {
             } finally {
             }
             textView?.visibility = View.VISIBLE
-            textView?.textSize = it.textSize
+            val myTextSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX, it.textSize, getResources().getDisplayMetrics())
+            textView?.textSize = myTextSize
             if (it.text!=null)
                 textView?.text= it.text!!
             textView?.textColor=it.textColor
             textView?.textBackground=it.textBackground
-            textView?.shiftY=it.shiftY
+            val myShift = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, it.shiftY.toFloat(), getResources().getDisplayMetrics())
+            textView?.shiftY= myShift.toInt()
             //textView?.isSelected = true
             showCount=it.showCount
             textView?.endCycleCallback = {//колбэк когда закончился текущий цикл показа строки
@@ -302,7 +298,8 @@ class AdvertiseService: Service() {
 
     fun readNextDataFromServer(address: String){//чтение данных с сервера
         advProducer?.readNextDataFromServer(this, address, {//колбэк для результата
-            showNextAdvDataAsync() }, {//колбэк для ошибки - смена сервера
+            showNextAdvDataAsync()
+        }, {//колбэк для ошибки - смена сервера
             readNextServerAddress()
         })
     }
@@ -341,7 +338,7 @@ class AdvertiseService: Service() {
                 newAddress+="/"
             newAddress+=currentDate+"/description.txt"
         }
-        Log.e(TAG, "new list = "+newAddress)
+        Log.e(TAG, "new list = " + newAddress)
         return newAddress
     }
 
@@ -375,7 +372,8 @@ class AdvertiseService: Service() {
             newHeight = height*newWidth/width
         }
         else{//иначе - высота*/
-            newHeight=minOf(height, maxSize)
+            val myShift = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, maxSize.toFloat(), getResources().getDisplayMetrics())
+            newHeight=minOf(height, myShift.toInt())
             newWidth = newHeight*width/height
         //}
         imageView.requestLayout()
