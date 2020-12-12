@@ -38,6 +38,8 @@ class RunningTextView @JvmOverloads constructor(
     private var delayToNext: Long = 10 // сколько делать задержку перед выводом следущей буквы
     private var whenCycleEnd: (()->Unit)? = null //адрес колбэка, когда закончили воспроизведение одного периода
     private var shiftHor = 2 //на сколько сдвигать текст при каждом цикле
+
+    public var textVShift = 0 //сдвиг текста по вертикали от середины
     public var shiftY=150//отступ снизу
 
     var endCycleCallback: (()->Unit)?//адрес колбэка, когда закончили воспроизведение одного периода
@@ -77,8 +79,11 @@ class RunningTextView @JvmOverloads constructor(
     var textSize: Float//размер текста
         get(){
             var metrics = DisplayMetrics()
-            display.getRealMetrics(metrics)
-            return paint.textSize/metrics.density
+            if (metrics!=null) {
+                display.getRealMetrics(metrics)
+                return paint.textSize / metrics.density
+            }
+            return 10.0f
         }
         set(value){
             var metrics = DisplayMetrics()
@@ -116,7 +121,7 @@ class RunningTextView @JvmOverloads constructor(
         var y = (bottom-paddingBottom).toFloat()
         var textRect = Rect()
         paint.getTextBounds(textToShow, 0, textToShow.length, textRect)
-        y = bottom - shiftY + shiftY/2 - (paint.descent() + paint.ascent()) / 2
+        y = bottom - shiftY + shiftY/2 - (paint.descent() + paint.ascent()) / 2 + textVShift
         //textRect.offset(0,y.toInt())
         //textRect.inset(-textRect.height()/5,-textRect.height()/5)
         textRect.left=0

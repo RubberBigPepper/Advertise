@@ -59,7 +59,7 @@ class AdvertiseService: Service() {
 
 
     override fun onDestroy() {
-        Log.e(TAG, "OnDestroy reached")
+        DebugLog.e(TAG, "OnDestroy reached")
         CloseChannel(this)
     }
 
@@ -98,7 +98,7 @@ class AdvertiseService: Service() {
         catch (ex: Exception){}
         var strAction: String? = ""
         strAction = if (intent == null) {
-            Log.e(TAG, "Intent is null,service was restarted. Killing")
+            DebugLog.e(TAG, "Intent is null,service was restarted. Killing")
             stopSelf()
             return
         } else {
@@ -227,9 +227,11 @@ class AdvertiseService: Service() {
         checkHour()
     }
 
-    fun showNextAdvDataAsync(){//запуск смены рекламы
+    fun showNextAdvDataAsync(pause: Int){//запуск смены рекламы
+        frameView?.visibility=View.GONE
         handler.removeCallbacks(nextAdvDataRunnable)
-        handler.post(nextAdvDataRunnable)
+        handler.postDelayed(nextAdvDataRunnable, 1000L*pause)
+        //handler.post(nextAdvDataRunnable)
     }
 
     @RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
@@ -289,7 +291,7 @@ class AdvertiseService: Service() {
             textView?.endCycleCallback = {//колбэк когда закончился текущий цикл показа строки
                 showCount--
                 if (showCount <= 0){//меняем на следующий показ
-                    showNextAdvDataAsync()
+                    showNextAdvDataAsync(it.pause)
                 }
             }
             //handler.postDelayed(nextAdvDataRunnable, it.duration * 1000L)
@@ -298,7 +300,7 @@ class AdvertiseService: Service() {
 
     fun readNextDataFromServer(address: String){//чтение данных с сервера
         advProducer?.readNextDataFromServer(this, address, {//колбэк для результата
-            showNextAdvDataAsync()
+            showNextAdvDataAsync(0)
         }, {//колбэк для ошибки - смена сервера
             readNextServerAddress()
         })
@@ -313,7 +315,7 @@ class AdvertiseService: Service() {
                 if (it == null) {//адрес сервера не прочитан, работаем по старинке
                     checkHour()
                 } else {//читаем новый адрес и новые данные с него
-                    Log.e(TAG, "New source found in master = " + it!!)
+                    DebugLog.e(TAG, "New source found in master = " + it!!)
                     val cPrefs = getSharedPreferences("Common",
                             AppCompatActivity.MODE_PRIVATE).edit()
                     cPrefs?.putString("server", it!!)
@@ -328,7 +330,8 @@ class AdvertiseService: Service() {
 
     private fun makeDescriptionAddr():String?{
         val currentDateTime = Calendar.getInstance()
-        val format = "MM/dd/HH"
+        val format = "MM/dd/HH" //для полной версии
+        //val format = "HH" //для отладки
         val sdf = SimpleDateFormat(format)
         val currentDate = sdf.format(currentDateTime.time)
         val cPrefs = getSharedPreferences("Common", MODE_PRIVATE)
@@ -338,7 +341,7 @@ class AdvertiseService: Service() {
                 newAddress+="/"
             newAddress+=currentDate+"/description.txt"
         }
-        Log.e(TAG, "new list = " + newAddress)
+        DebugLog.e(TAG, "new list = " + newAddress)
         return newAddress
     }
 

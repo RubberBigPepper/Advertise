@@ -13,8 +13,10 @@ class AdvData {
     var showCount = 1//количество показов, по умолчанию 1 раз
     var textSize = 30.0f //размер текста
     var textColor = Color.WHITE //цвет текста
-    var textBackground = Color.GRAY//цвет фона
+    var textBackground = Color.TRANSPARENT//цвет фона
     var shiftY=120 // отступ снизу по вертикали
+    var textShift = 0 //свдиг тескста (от его baseline)
+    var pause = 0 //пауза в секундах до показа следующего
 
 
     val isGif: Boolean //проверим на gif

@@ -39,7 +39,11 @@ class AdvProducer (context: Context) {//класс будет выдавать �
         @JvmStatic
         val shiftYKey = "shiftY"
         @JvmStatic
-        val newSource = "source"
+        val newSourceKey = "source"
+        @JvmStatic
+        val pauseKey = "pause"
+        @JvmStatic
+        val textShiftKey = "textShift"
     }
 
     fun next(): AdvData? {
@@ -107,8 +111,8 @@ class AdvProducer (context: Context) {//класс будет выдавать �
                     if (fields.size == 2) {
                         val key = fields[0].trim()
                         var value = fields[1].trim()
-                        /*if (key.equals(AdvProducer.newSource, ignoreCase = true)) {//нашли новый адрес сервера
-                            Log.e(TAG, "New source found = "+value)
+                        /*if (key.equals(AdvProducer.newSourceKey, ignoreCase = true)) {//нашли новый адрес сервера
+                            DebugLog.e(TAG, "New source found = "+value)
                             val cPrefs = mContext.getSharedPreferences("Common",
                                 AppCompatActivity.MODE_PRIVATE
                             ).edit()
@@ -136,6 +140,12 @@ class AdvProducer (context: Context) {//класс будет выдавать �
                         }
                         if (key.equals(AdvProducer.shiftYKey, ignoreCase = true)) {
                             value.toIntOrNull()?.let { advData.shiftY = it }
+                        }
+                        if (key.equals(AdvProducer.pauseKey, ignoreCase = true)) {
+                            value.toIntOrNull()?.let { advData.pause = it }
+                        }
+                        if (key.equals(AdvProducer.textShiftKey, ignoreCase = true)) {
+                            value.toIntOrNull()?.let { advData.textShift = it }
                         }
                     }
                 }
@@ -184,7 +194,7 @@ class AdvProducer (context: Context) {//класс будет выдавать �
                     if (fields.size == 2) {
                         val key = fields[0].trim()
                         var value = fields[1].trim()
-                        if (key.equals(AdvProducer.newSource, ignoreCase = true)) {//нашли новый адрес сервера
+                        if (key.equals(AdvProducer.newSourceKey, ignoreCase = true)) {//нашли новый адрес сервера
                             newAddress = value
                             callback(newAddress)
                             break
