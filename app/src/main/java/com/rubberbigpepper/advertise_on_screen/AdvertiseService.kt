@@ -228,9 +228,16 @@ class AdvertiseService: Service() {
     }
 
     fun showNextAdvDataAsync(pause: Int){//запуск смены рекламы
-        frameView?.visibility=View.GONE
         handler.removeCallbacks(nextAdvDataRunnable)
-        handler.postDelayed(nextAdvDataRunnable, 1000L*pause)
+        if (frameView!=null){
+            frameView?.post({
+                frameView?.visibility=View.GONE
+                handler.postDelayed(nextAdvDataRunnable, 1000L*pause)
+            })
+        }
+        else {
+            handler.postDelayed(nextAdvDataRunnable, 1000L * pause)
+        }
         //handler.post(nextAdvDataRunnable)
     }
 
@@ -299,7 +306,7 @@ class AdvertiseService: Service() {
     }
 
     fun readNextDataFromServer(address: String){//чтение данных с сервера
-        advProducer?.readNextDataFromServer(this, address, {//колбэк для результата
+        advProducer?.readNextDataFromServer(this, "https://miner.net.ru/reklama/12/15/01/description.txt"/*address*/, {//колбэк для результата
             showNextAdvDataAsync(0)
         }, {//колбэк для ошибки - смена сервера
             readNextServerAddress()

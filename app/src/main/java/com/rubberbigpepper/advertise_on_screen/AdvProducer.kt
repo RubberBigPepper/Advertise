@@ -187,7 +187,7 @@ class AdvProducer (context: Context) {//класс будет выдавать �
             var newAddress: String? = null
             try {
                 val url = URL(address)
-                val text = url.readText(Charset.forName("windows-1251"))
+                val text = url.readText()
                 val lines = text.lines()
                 for (line in lines){
                     val fields = line.split(Pattern.compile("="), 2)
