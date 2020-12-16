@@ -12,10 +12,10 @@ class AdvData {
     var imagePath: String? = null //путь к картинке
     var showCount = 1//количество показов, по умолчанию 1 раз
     var textSize = 30.0f //размер текста
-    var textColor = Color.WHITE //цвет текста
+    var textColor = Color.GRAY //цвет текста
     var textBackground = Color.TRANSPARENT//цвет фона
-    var shiftY=120 // отступ снизу по вертикали
-    var textShift = 0 //свдиг тескста (от его baseline)
+    var marginBottom = 0 // отступ снизу по вертикали
+    var height = 120 //высота блока
     var pause = 0 //пауза в секундах до показа следующего
 
 
@@ -35,6 +35,7 @@ class AdvData {
         this.showCount = advData.showCount
         this.textSize = advData.textSize
         this.textBackground = advData.textBackground
-        this.shiftY=shiftY
+        this.marginBottom = advData.marginBottom
+        this.height = height
     }
 }

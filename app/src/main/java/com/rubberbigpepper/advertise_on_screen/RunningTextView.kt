@@ -39,8 +39,8 @@ class RunningTextView @JvmOverloads constructor(
     private var whenCycleEnd: (()->Unit)? = null //адрес колбэка, когда закончили воспроизведение одного периода
     private var shiftHor = 2 //на сколько сдвигать текст при каждом цикле
 
-    public var textVShift = 0 //сдвиг текста по вертикали от середины
-    public var shiftY=150//отступ снизу
+    public var marginBottom = 0 //отступ снизу
+    public var heightRect = 0//высота прямоугольника вывода
 
     var endCycleCallback: (()->Unit)?//адрес колбэка, когда закончили воспроизведение одного периода
         get(){
@@ -121,12 +121,12 @@ class RunningTextView @JvmOverloads constructor(
         var y = (bottom-paddingBottom).toFloat()
         var textRect = Rect()
         paint.getTextBounds(textToShow, 0, textToShow.length, textRect)
-        y = bottom - shiftY + shiftY/2 - (paint.descent() + paint.ascent()) / 2 + textVShift
+        y = bottom - heightRect + heightRect/2 - (paint.descent() + paint.ascent()) / 2 - marginBottom
         //textRect.offset(0,y.toInt())
         //textRect.inset(-textRect.height()/5,-textRect.height()/5)
         textRect.left=0
-        textRect.bottom=bottom
-        textRect.top=textRect.bottom-shiftY
+        textRect.bottom=bottom-marginBottom
+        textRect.top=textRect.bottom-heightRect
         textRect.right=width
         canvas.drawRect(textRect, paintBackground)
         /*      тут блок отрисовки фона текста, двигающегося за текстом, оказался не нужен

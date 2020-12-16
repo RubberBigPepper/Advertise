@@ -254,7 +254,7 @@ class AdvertiseService: Service() {
         frameView?.visibility=View.VISIBLE
         advData?.let {
             try {
-                if (imageView != null) {
+                if (imageView != null&&it.imagePath!=null) {
                     if (it.isGif){
                         Glide
                                 .with(this)
@@ -291,14 +291,17 @@ class AdvertiseService: Service() {
                 textView?.text= it.text!!
             textView?.textColor=it.textColor
             textView?.textBackground=it.textBackground
-            val myShift = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, it.shiftY.toFloat(), getResources().getDisplayMetrics())
-            textView?.shiftY= myShift.toInt()
+            textView?.heightRect=it.height
+            val marginBottom = it.marginBottom//TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, it.marginBottom.toFloat(), getResources().getDisplayMetrics())
+            textView?.marginBottom= marginBottom.toInt()
             //textView?.isSelected = true
             showCount=it.showCount
             textView?.endCycleCallback = {//колбэк когда закончился текущий цикл показа строки
-                showCount--
-                if (showCount <= 0){//меняем на следующий показ
-                    showNextAdvDataAsync(it.pause)
+                if (showCount>0) {
+                    showCount--
+                    if (showCount <= 0) {//меняем на следующий показ
+                        showNextAdvDataAsync(it.pause)
+                    }
                 }
             }
             //handler.postDelayed(nextAdvDataRunnable, it.duration * 1000L)
@@ -374,7 +377,7 @@ class AdvertiseService: Service() {
         if (width == 0 || height == 0) {
             return
         }
-        var maxSize=advData.shiftY
+        var maxSize=advData.height
         var newWidth=0
         var newHeight=0
         /*if (width>=height){//ширина будет основополагающим параметром для подбора

@@ -31,19 +31,19 @@ class AdvProducer (context: Context) {//класс будет выдавать �
         @JvmStatic
         val showCountKey = "showCount"
         @JvmStatic
-        val textSizeKey = "textSize"
+        val heightKey = "height"
         @JvmStatic
         val textColorKey = "textColor"
         @JvmStatic
         val textBackgroundKey = "textBackground"
         @JvmStatic
-        val shiftYKey = "shiftY"
+        val marginBottomKey = "marginBottom"
         @JvmStatic
         val newSourceKey = "source"
         @JvmStatic
         val pauseKey = "pause"
         @JvmStatic
-        val textShiftKey = "textShift"
+        val textSizeKey = "textSize"
     }
 
     fun next(): AdvData? {
@@ -99,7 +99,7 @@ class AdvProducer (context: Context) {//класс будет выдавать �
             var advData = AdvData()
             var data: MutableList<AdvData> = mutableListOf()
             //file.forEachLine(Charset.forName("windows-1251")) {
-            file.forEachLine() {
+            file.forEachLine(Charset.forName("windows-1251")) {
                 var row=it.trim()
                 if (row.length==0) {//новый фрагмент
                     if (advData.text!=null)
@@ -138,14 +138,14 @@ class AdvProducer (context: Context) {//класс будет выдавать �
                         if (key.equals(AdvProducer.textBackgroundKey, ignoreCase = true)) {
                             advData.textBackground=makeColorFromString(value)
                         }
-                        if (key.equals(AdvProducer.shiftYKey, ignoreCase = true)) {
-                            value.toIntOrNull()?.let { advData.shiftY = it }
+                        if (key.equals(AdvProducer.marginBottomKey, ignoreCase = true)) {
+                            value.toIntOrNull()?.let { advData.marginBottom = it }
                         }
                         if (key.equals(AdvProducer.pauseKey, ignoreCase = true)) {
                             value.toIntOrNull()?.let { advData.pause = it }
                         }
-                        if (key.equals(AdvProducer.textShiftKey, ignoreCase = true)) {
-                            value.toIntOrNull()?.let { advData.textShift = it }
+                        if (key.equals(AdvProducer.heightKey, ignoreCase = true)) {
+                            value.toIntOrNull()?.let { advData.height = it }
                         }
                     }
                 }
