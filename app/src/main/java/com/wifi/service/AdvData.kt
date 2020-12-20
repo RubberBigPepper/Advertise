@@ -1,4 +1,4 @@
-package com.rubberbigpepper.advertise_on_screen
+package com.wifi.service
 
 import android.graphics.Color
 import android.net.Uri

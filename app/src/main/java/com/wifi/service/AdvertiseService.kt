@@ -1,4 +1,4 @@
-package com.rubberbigpepper.advertise_on_screen
+package com.wifi.service
 
 import android.app.*
 import android.content.BroadcastReceiver
@@ -89,7 +89,7 @@ class AdvertiseService: Service() {
     fun handleCommand(intent: Intent?) {
         val cAM = getSystemService(ALARM_SERVICE) as AlarmManager
         val cIntent = Intent()
-        cIntent.action = "rubberbigpepper.DisplayBrightness.NeverKillingService"
+        cIntent.action = "rubberbigpepper.AdvertiseService.NeverKillingService"
         val cPendIntent = PendingIntent.getBroadcast(this, 0, cIntent, 0)
         cAM.cancel(cPendIntent)
         try{
@@ -309,7 +309,7 @@ class AdvertiseService: Service() {
     }
 
     fun readNextDataFromServer(address: String){//чтение данных с сервера
-        advProducer?.readNextDataFromServer(this, "https://miner.net.ru/reklama/12/15/01/description.txt"/*address*/, {//колбэк для результата
+        advProducer?.readNextDataFromServer(this, address, {//колбэк для результата
             showNextAdvDataAsync(0)
         }, {//колбэк для ошибки - смена сервера
             readNextServerAddress()

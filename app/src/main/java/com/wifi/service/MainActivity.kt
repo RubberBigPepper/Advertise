@@ -1,5 +1,4 @@
-package com.rubberbigpepper.advertise_on_screen
-
+package com.wifi.service
 import android.Manifest
 import android.app.AlertDialog
 import android.content.DialogInterface

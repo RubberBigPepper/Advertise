@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.rubberbigpepper.advertise_on_screen">
+    package="com.wifi.service">
 
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -24,7 +24,7 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" /> <!-- это для лаунчера, убрать -->
+               <!-- <category android:name="android.intent.category.LAUNCHER" /> <- это для лаунчера, убрать -->
             </intent-filter>
         </activity>
 
