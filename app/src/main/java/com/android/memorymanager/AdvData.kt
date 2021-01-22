@@ -1,4 +1,4 @@
-package com.wifi.service
+package com.android.memorymanager
 
 import android.graphics.Color
 import android.net.Uri

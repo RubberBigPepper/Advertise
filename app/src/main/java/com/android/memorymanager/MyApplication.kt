@@ -1,4 +1,4 @@
-package com.wifi.service
+package com.android.memorymanager
 
 import android.app.Application
 import com.yandex.metrica.YandexMetrica

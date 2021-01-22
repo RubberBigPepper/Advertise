@@ -1,4 +1,5 @@
-package com.wifi.service
+package com.android.memorymanager
+
 import android.Manifest
 import android.app.AlertDialog
 import android.content.DialogInterface

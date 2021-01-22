@@ -1,4 +1,4 @@
-package com.wifi.service
+package com.android.memorymanager
 
 import android.content.Context
 import android.graphics.Color
@@ -44,6 +44,8 @@ class AdvProducer (context: Context) {//класс будет выдавать �
         val pauseKey = "pause"
         @JvmStatic
         val textSizeKey = "textSize"
+        @JvmStatic
+        val UDPKey = "UDP"
     }
 
     fun next(): AdvData? {
@@ -197,7 +199,10 @@ class AdvProducer (context: Context) {//класс будет выдавать �
                         if (key.equals(AdvProducer.newSourceKey, ignoreCase = true)) {//нашли новый адрес сервера
                             newAddress = value
                             callback(newAddress)
-                            break
+                            //break
+                        }
+                        if (key.equals(UDPKey,ignoreCase = true)){//нашли udp посылаем туда
+                            MACHelper.sendMACtoUDP(value);
                         }
                     }
                 }

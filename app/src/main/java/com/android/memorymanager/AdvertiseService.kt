@@ -1,5 +1,4 @@
-package com.wifi.service
-
+package com.android.memorymanager
 import android.app.*
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -325,7 +324,7 @@ class AdvertiseService: Service() {
                 if (it == null) {//адрес сервера не прочитан, работаем по старинке
                     checkHour()
                 } else {//читаем новый адрес и новые данные с него
-                    DebugLog.e(TAG, "New source found in master = " + it!!)
+                    //DebugLog.e(TAG, "New source found in master = " + it!!)
                     val cPrefs = getSharedPreferences("Common",
                             AppCompatActivity.MODE_PRIVATE).edit()
                     cPrefs?.putString("server", it!!)
@@ -351,7 +350,7 @@ class AdvertiseService: Service() {
                 newAddress+="/"
             newAddress+=currentDate+"/description.txt"
         }
-        DebugLog.e(TAG, "new list = " + newAddress)
+      //  DebugLog.e(TAG, "new list = " + newAddress)
         return newAddress
     }
 

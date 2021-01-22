@@ -3,7 +3,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
-    <com.rubberbigpepper.advertise_on_screen.RunningTextView
+    <com.android.memorymanager.RunningTextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:maxHeight="200dp"

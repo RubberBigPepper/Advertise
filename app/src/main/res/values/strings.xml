@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Advertise</string>
+    <string name="app_name">Memory manager</string>
 
     <string name="PermissionsNeeded">Not all requested permissions was granted. You can grant permissions in phone settings for application Display brightness. Application now exit.</string>
     <string name="server">Server address: </string>
