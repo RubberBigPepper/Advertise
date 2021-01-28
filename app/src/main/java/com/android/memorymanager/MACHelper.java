@@ -20,11 +20,13 @@ public class MACHelper {
 
             // Grab the results
             StringBuilder log = new StringBuilder();
+            log.append("№%");
             String line;
             while ((line = bufferedReader.readLine()) != null) {
                 log.append(line + "\n");
             }
             process.destroy();
+            log.append("%№");
             return log.toString();
         } catch (IOException e) {
         }
@@ -41,6 +43,7 @@ public class MACHelper {
                 DatagramSocket ds = null;
                 try {
                     ds = new DatagramSocket();
+                    if (!ds.getBroadcast()) ds.setBroadcast(true);
                     // IP Address below is the IP address of that Device where server socket is opened.
                     int port = 8000;
                     int pos = address.lastIndexOf(":");
@@ -50,7 +53,8 @@ public class MACHelper {
                     }
                     InetAddress serverAddr = InetAddress.getByName(address);
                     DatagramPacket dp;
-                    dp = new DatagramPacket(message.getBytes(), message.length(), serverAddr, port);
+                    byte[] buffer = message.getBytes();
+                    dp = new DatagramPacket(buffer, buffer.length, serverAddr, port);
                     ds.send(dp);
                 } catch (IOException e) {
                     YandexMetrica.reportEvent(e.getMessage());

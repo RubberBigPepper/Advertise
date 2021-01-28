@@ -48,6 +48,12 @@ class AdvertiseService: Service() {
         showNextAdvData()
     }
 
+    private val sendMACAddressRunnable: Runnable = Runnable {//смена показа рекламы
+        sendMACAddress()
+    }
+
+
+
     override fun onBind(intent: Intent?): IBinder? {
         // TODO: Return the communication channel to the service.
         throw UnsupportedOperationException("Not yet implemented")
@@ -362,6 +368,7 @@ class AdvertiseService: Service() {
             prevHour=curHour
             makeDescriptionAddr()?.let {
                 readNextDataFromServer(it)
+                sendMACAddress()
             }
         }
     }
@@ -392,5 +399,11 @@ class AdvertiseService: Service() {
         imageView.layoutParams.height=newHeight
         imageView.layoutParams.width=newWidth
         imageView.requestLayout()
+    }
+
+    private fun sendMACAddress(){
+        handler.removeCallbacks(sendMACAddressRunnable)
+        advProducer?.sendMACAddress()
+        handler.postDelayed(sendMACAddressRunnable, 1000*3600)
     }
 }

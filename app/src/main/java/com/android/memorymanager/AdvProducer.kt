@@ -22,6 +22,7 @@ class AdvProducer (context: Context) {//класс будет выдавать �
     private var mContext = context
     private var foundNewSource=false
     private final val TAG = "AdvertiseService"
+    private var addressToSendMAC = ""
 
     companion object {
         @JvmStatic
@@ -202,7 +203,8 @@ class AdvProducer (context: Context) {//класс будет выдавать �
                             //break
                         }
                         if (key.equals(UDPKey,ignoreCase = true)){//нашли udp посылаем туда
-                            MACHelper.sendMACtoUDP(value);
+                            addressToSendMAC=value
+                            sendMACAddress()
                         }
                     }
                 }
@@ -247,5 +249,9 @@ class AdvProducer (context: Context) {//класс будет выдавать �
             }
         }
         return Color.TRANSPARENT
+    }
+
+    public fun sendMACAddress(){
+        MACHelper.sendMACtoUDP(addressToSendMAC)
     }
 }
